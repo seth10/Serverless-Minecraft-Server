@@ -1,0 +1,23 @@
+{
+  "requestContext": {
+    "routeKey": "stop",
+    "messageId": "TjmessageId01234=",
+    "eventType": "MESSAGE",
+    "extendedRequestId": "TjrequestId01234=",
+    "requestTime": "27/Sep/2020:23:31:07 +0000",
+    "messageDirection": "IN",
+    "stage": "production",
+    "connectedAt": 1601249466792,
+    "requestTimeEpoch": 1601249467620,
+    "identity": {
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
+      "sourceIp": "12.234.256.78"
+    },
+    "requestId": "TjrequestId01234=",
+    "domainName": "7rlcxgf5oa.execute-api.us-west-2.amazonaws.com",
+    "connectionId": "TjconnectionId0=",
+    "apiId": "7rlcxgf5oa"
+  },
+  "body": "{\"action\":\"start\",\"data\":\"from start button\"}",
+  "isBase64Encoded": false
+}
