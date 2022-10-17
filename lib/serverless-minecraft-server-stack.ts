@@ -1,6 +1,8 @@
 import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 
 export class ServerlessMinecraftServerStack extends Stack {
@@ -94,7 +96,50 @@ export class ServerlessMinecraftServerStack extends Stack {
       role: lambdaRole
     });
 
-    // TODO: setup triggers from API Gateway
+    // TODO: add App client / App integration to Cognito userPool
+    // TODO: try enabling Federation
+    const userPool = new cognito.UserPool(this, 'userPool', {
+      signInCaseSensitive: false,
+      passwordPolicy: {
+        requireDigits: false,
+        requireLowercase: false,
+        requireSymbols: false,
+        requireUppercase: false
+      },
+      selfSignUpEnabled: true,
+      accountRecovery: cognito.AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA,
+      autoVerify: { email: true }
+    });
+
+    const auth = new apigateway.CognitoUserPoolsAuthorizer(this, 'authorizer', {
+      cognitoUserPools: [userPool]
+    });
+
+    // TODO: make Authorization name look nicer
+
+    const restAPI = new apigateway.RestApi(this, 'rest-api');
+    const startRoute = restAPI.root.addResource('start');
+    // TODO: configure Integration Response and Method Response, and check if OPTIONS is actually necessary
+    startRoute.addMethod('OPTIONS');
+    const startServerIntegration = new apigateway.LambdaIntegration(startServer, {
+      allowTestInvoke: false
+    });
+    // TODO: set up Method Response with HTTP Status: Proxy and Meodels: application/json => Empty
+    startRoute.addMethod('POST', startServerIntegration, {
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+      authorizer: auth
+    });
+    /*
+    const stopRoute = restAPI.root.addResource('stop');
+    stopRoute.addMethod('OPTIONS');
+    const stopServerIntegration = new apigateway.LambdaIntegration(stopServer);
+    stopRoute.addMethod('POST', stopServerIntegration, {
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+      authorizer: auth
+    });
+    */
+    
+    // TODO: add WebSocket API
 
   }
 }
